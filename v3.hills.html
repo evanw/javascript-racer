@@ -1,13 +1,13 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 
 <html>
 <head>
   <title>Javascript Racer - v3 (hills)</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
   <link href="common.css" rel="stylesheet" type="text/css" />
-</head> 
+</head>
 
-<body> 
+<body>
 
   <table id="controls">
     <tr>
@@ -86,8 +86,8 @@
 
     var fps           = 60;                      // how many 'update' frames per second
     var step          = 1/fps;                   // how long is each frame (in seconds)
-    var width         = 1024;                    // logical canvas width
-    var height        = 768;                     // logical canvas height
+    var width         = 480;//1024;              // logical canvas width
+    var height        = 360;//768;               // logical canvas height
     var centrifugal   = 0.3;                     // centrifugal force multiplier when going around curves
     var offRoadDecel  = 0.99;                    // speed multiplier when off road (e.g. you lose 2% speed each update frame)
     var skySpeed      = 0.001;                   // background sky layer scroll speed when going around curve (or up hill)
@@ -145,6 +145,11 @@
       hillOffset = Util.increase(hillOffset, hillSpeed * playerSegment.curve * speedPercent, 1);
       treeOffset = Util.increase(treeOffset, treeSpeed * playerSegment.curve * speedPercent, 1);
 
+      keyFaster = true;
+      keySlower = false;
+      keyRight = (playerX < -0.02);
+      keyLeft = (playerX > 0.02);
+
       if (keyLeft)
         playerX = playerX - dx;
       else if (keyRight)
@@ -167,6 +172,48 @@
 
     }
 
+    var snapshotCanvas = document.createElement('canvas');
+    var snapshotContext = snapshotCanvas.getContext('2d');
+    var snapshotCount = 0;
+    var count = 0;
+
+    snapshotCanvas.width = width;
+    snapshotCanvas.height = height;
+    snapshotCanvas.style.background = '#EEE';
+    document.body.appendChild(snapshotCanvas);
+
+    function snapshot() {
+      var source = ctx.getImageData(0, 0, width, height);
+      var target = ctx.createImageData(width, height);
+      var sourceData = source.data;
+      var targetData = target.data;
+      var n = width * height * 4;
+
+      for (var i = 0; i < n; i += 4) {
+        var r = sourceData[i];
+        var g = sourceData[i + 1];
+        var b = sourceData[i + 2];
+        targetData[i] = targetData[i + 1] = targetData[i + 2] = r * 0.2 + g * 0.7 + b * 0.1;
+        targetData[i + 3] = 255;
+      }
+
+      snapshotContext.putImageData(target, 0, 0);
+
+      var input = '0';
+      if (playerX < -0.02) input = 'R';
+      if (playerX > 0.02) input = 'L';
+
+      var xhr = new XMLHttpRequest;
+      xhr.open('POST', 'http://localhost:8127/?name=snapshot' + ('000' + snapshotCount++).slice(-3) + '.input=' + input + '.png');
+      var url = snapshotCanvas.toDataURL();
+      var data = atob(url.replace('data:image/png;base64,', ''));
+      var bytes = new Uint8Array(data.length);
+      for (var i = 0; i < data.length; i++) {
+        bytes[i] = data.charCodeAt(i);
+      }
+      xhr.send(bytes);
+    }
+
     //=========================================================================
     // RENDER THE GAME WORLD
     //=========================================================================
@@ -183,7 +230,8 @@
       var x  = 0;
       var dx = - (baseSegment.curve * basePercent);
 
-      ctx.clearRect(0, 0, width, height);
+      ctx.fillStyle = '#72D7EE';
+      ctx.fillRect(0, 0, width, height);
 
       Render.background(ctx, background, width, height, BACKGROUND.SKY,   skyOffset,  resolution * skySpeed  * playerY);
       Render.background(ctx, background, width, height, BACKGROUND.HILLS, hillOffset, resolution * hillSpeed * playerY);
@@ -219,6 +267,11 @@
                        segment.color);
 
         maxy = segment.p2.screen.y;
+      }
+
+      // Take a lap's worth of snapshots
+      if (count++ % 10 == 0 && count < 10 * 370) {
+        snapshot();
       }
 
       Render.player(ctx, width, height, resolution, roadWidth, sprites, speed/maxSpeed,
@@ -281,7 +334,7 @@
       height = height || ROAD.HILL.NONE;
       addRoad(num, num, num, curve, height);
     }
-        
+
     function addLowRollingHills(num, height) {
       num    = num    || ROAD.LENGTH.SHORT;
       height = height || ROAD.HILL.LOW;
@@ -332,7 +385,7 @@
     }
 
     function findSegment(z) {
-      return segments[Math.floor(z/segmentLength) % segments.length]; 
+      return segments[Math.floor(z/segmentLength) % segments.length];
     }
 
     //=========================================================================
@@ -416,4 +469,4 @@
 
   </script>
 
-</body> 
+</body>
