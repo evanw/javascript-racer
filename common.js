@@ -35,11 +35,16 @@ var Dom = {
 
 var Util = {
 
+  seed: 1,
+  random: function() {
+    return (this.seed = (this.seed * 20077 + (this.seed & 0xFFFF) * 1103495168 + 12345) & 0x7FFFFFFF) / 0x7FFFFFFF;
+  },
+
   timestamp:        function()                  { return new Date().getTime();                                    },
   toInt:            function(obj, def)          { if (obj !== null) { var x = parseInt(obj, 10); if (!isNaN(x)) return x; } return Util.toInt(def, 0); },
   toFloat:          function(obj, def)          { if (obj !== null) { var x = parseFloat(obj);   if (!isNaN(x)) return x; } return Util.toFloat(def, 0.0); },
   limit:            function(value, min, max)   { return Math.max(min, Math.min(value, max));                     },
-  randomInt:        function(min, max)          { return Math.round(Util.interpolate(min, max, Math.random()));   },
+  randomInt:        function(min, max)          { return Math.round(Util.interpolate(min, max, Util.random()));   },
   randomChoice:     function(options)           { return options[Util.randomInt(0, options.length-1)];            },
   percentRemaining: function(n, total)          { return (n%total)/total;                                         },
   accelerate:       function(v, accel, dt)      { return v + (accel * dt);                                        },
@@ -310,7 +315,7 @@ var Render = {
 
   player: function(ctx, width, height, resolution, roadWidth, sprites, speedPercent, scale, destX, destY, steer, updown) {
 
-    var bounce = (1.5 * Math.random() * speedPercent * resolution) * Util.randomChoice([-1,1]);
+    var bounce = (1.5 * Util.random() * speedPercent * resolution) * Util.randomChoice([-1,1]);
     var sprite;
     if (steer < 0)
       sprite = (updown > 0) ? SPRITES.PLAYER_UPHILL_LEFT : SPRITES.PLAYER_LEFT;

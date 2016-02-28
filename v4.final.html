@@ -1,13 +1,13 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 
 <html>
 <head>
   <title>Javascript Racer - v4 (final)</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
   <link href="common.css" rel="stylesheet" type="text/css" />
-</head> 
+</head>
 
-<body> 
+<body>
 
   <table id="controls">
     <tr>
@@ -70,7 +70,7 @@
   <div id="racer">
     <div id="hud">
       <span id="speed"            class="hud"><span id="speed_value" class="value">0</span> mph</span>
-      <span id="current_lap_time" class="hud">Time: <span id="current_lap_time_value" class="value">0.0</span></span> 
+      <span id="current_lap_time" class="hud">Time: <span id="current_lap_time_value" class="value">0.0</span></span>
       <span id="last_lap_time"    class="hud">Last Lap: <span id="last_lap_time_value" class="value">0.0</span></span>
       <span id="fast_lap_time"    class="hud">Fastest Lap: <span id="fast_lap_time_value" class="value">0.0</span></span>
     </div>
@@ -409,7 +409,7 @@
     }
 
     function findSegment(z) {
-      return segments[Math.floor(z/segmentLength) % segments.length]; 
+      return segments[Math.floor(z/segmentLength) % segments.length];
     }
 
     //=========================================================================
@@ -470,7 +470,7 @@
       height = height || ROAD.HILL.NONE;
       addRoad(num, num, num, curve, height);
     }
-        
+
     function addLowRollingHills(num, height) {
       num    = num    || ROAD.LENGTH.SHORT;
       height = height || ROAD.HILL.LOW;
@@ -558,18 +558,18 @@
       addSprite(segments.length - 25, SPRITES.BILLBOARD06,  1.2);
 
       for(n = 10 ; n < 200 ; n += 4 + Math.floor(n/100)) {
-        addSprite(n, SPRITES.PALM_TREE, 0.5 + Math.random()*0.5);
-        addSprite(n, SPRITES.PALM_TREE,   1 + Math.random()*2);
+        addSprite(n, SPRITES.PALM_TREE, 0.5 + Util.random()*0.5);
+        addSprite(n, SPRITES.PALM_TREE,   1 + Util.random()*2);
       }
 
       for(n = 250 ; n < 1000 ; n += 5) {
         addSprite(n,     SPRITES.COLUMN, 1.1);
-        addSprite(n + Util.randomInt(0,5), SPRITES.TREE1, -1 - (Math.random() * 2));
-        addSprite(n + Util.randomInt(0,5), SPRITES.TREE2, -1 - (Math.random() * 2));
+        addSprite(n + Util.randomInt(0,5), SPRITES.TREE1, -1 - (Util.random() * 2));
+        addSprite(n + Util.randomInt(0,5), SPRITES.TREE2, -1 - (Util.random() * 2));
       }
 
       for(n = 200 ; n < segments.length ; n += 3) {
-        addSprite(n, Util.randomChoice(SPRITES.PLANTS), Util.randomChoice([1,-1]) * (2 + Math.random() * 5));
+        addSprite(n, Util.randomChoice(SPRITES.PLANTS), Util.randomChoice([1,-1]) * (2 + Util.random() * 5));
       }
 
       var side, sprite, offset;
@@ -578,10 +578,10 @@
         addSprite(n + Util.randomInt(0, 50), Util.randomChoice(SPRITES.BILLBOARDS), -side);
         for(i = 0 ; i < 20 ; i++) {
           sprite = Util.randomChoice(SPRITES.PLANTS);
-          offset = side * (1.5 + Math.random());
+          offset = side * (1.5 + Util.random());
           addSprite(n + Util.randomInt(0, 50), sprite, offset);
         }
-          
+
       }
 
     }
@@ -590,10 +590,10 @@
       cars = [];
       var n, car, segment, offset, z, sprite, speed;
       for (var n = 0 ; n < totalCars ; n++) {
-        offset = Math.random() * Util.randomChoice([-0.8, 0.8]);
-        z      = Math.floor(Math.random() * segments.length) * segmentLength;
+        offset = Util.random() * Util.randomChoice([-0.8, 0.8]);
+        z      = Math.floor(Util.random() * segments.length) * segmentLength;
         sprite = Util.randomChoice(SPRITES.CARS);
-        speed  = maxSpeed/4 + Math.random() * maxSpeed/(sprite == SPRITES.SEMI ? 4 : 2);
+        speed  = maxSpeed/4 + Util.random() * maxSpeed/(sprite == SPRITES.SEMI ? 4 : 2);
         car = { offset: offset, z: z, sprite: sprite, speed: speed };
         segment = findSegment(car.z);
         segment.cars.push(car);
@@ -684,5 +684,5 @@
 
   </script>
 
-</body> 
+</body>
 </html>
